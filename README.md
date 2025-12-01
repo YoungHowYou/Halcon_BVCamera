@@ -1,0 +1,3 @@
+# Halcon_Hik
+halcon的UI界面拓展包
+可以让halcon调用XCGUI制作的界面库，系统里面增加环境变量名HALCONEXTENSIONS的环境变量，然后把这个包路径填入即可，项目里有使用例程，只支持windows
