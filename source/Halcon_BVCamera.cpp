@@ -61,6 +61,7 @@ VOID CALLBACK ImageDataRcv(HCAMERA hCamera, BVCAM_IMAGE *pImage, pBVCAM_IMAGEDAT
 	MyContext *ctx = static_cast<MyContext *>(Context);
 	HObject ho_Image;
 	HTuple hv_MessageHandle;
+	HTuple hv_MessageHandleRemove;
 	// MyContext *ctx = (MyContext *)用户自定义数据容器;
 	// MyContext *ctx = static_cast<MyContext *>(用户自定义数据容器);
 	// int *用户自定义数据 = reinterpret_cast<int *>(用户自定义数据容器);
@@ -85,7 +86,16 @@ VOID CALLBACK ImageDataRcv(HCAMERA hCamera, BVCAM_IMAGE *pImage, pBVCAM_IMAGEDAT
 
 	SetMessageTuple(hv_MessageHandle, "nDeviceID", ctx->相机用户名);
 
-	EnqueueMessage((ctx->相机采集队列), hv_MessageHandle, HTuple(), HTuple());
+	try
+	{
+		EnqueueMessage((ctx->相机采集队列), hv_MessageHandle, HTuple(), HTuple());
+	}
+	catch (HException &HDevExpDefaultException)
+	{
+		DequeueMessage((ctx->相机采集队列), "timeout", "infinite", &hv_MessageHandleRemove);
+		EnqueueMessage((ctx->相机采集队列), hv_MessageHandle, HTuple(), HTuple());
+		ClearMessage(hv_MessageHandleRemove);
+	}
 	ClearMessage(hv_MessageHandle);
 }
 
